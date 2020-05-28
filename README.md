@@ -5,8 +5,11 @@ This repository is a pytorch implementation of [Adversarial Attacks on Graph Neu
 <img src="https://github.com/facebookresearch/FixRes/blob/master/image/image2.png" height="190">
 
 It is modified from following githubs :
+
 > https://github.com/danielzuegner/gnn-meta-attack (Official, Tensorflow)
+
 > https://github.com/ChandlerBang/pytorch-gnn-meta-attack (Pytorch)
+
 > https://github.com/Kaushalya/gnn-meta-attack-pytorch (Pytorch)
 
 ## Requirements
@@ -19,10 +22,12 @@ It is modified from following githubs :
 * matpotlib
 * seaborn
 
-## Training
+## Usage
 
 See help (`-h` flag) for detailed parameter list of each script before executing the code.
  
+### Training
+
 To train the model(s) in the paper, run this command:
 
 ```bash
@@ -33,7 +38,7 @@ python main_resnet50_scratch.py --batch 64 --num-tasks 8 --learning-rate 2e-2
 
 > 📋Describe how to train the models, with example commands on how to train the models in your paper, including the full training procedure and appropriate hyperparameters.
 
-## Evaluation
+### Evaluation
 
 See help (`-h` flag) for detailed parameter list of each script before executing the code.
 
@@ -65,16 +70,6 @@ from .transforms_v2 import get_transforms
 transform = get_transforms(input_size=Train_size,test_size=Test_size, kind='full', crop=True, need=('train', 'val'), backbone=None)
 train_set = datasets.ImageFolder(train_path,transform=transform['val_train'])
 test_set = datasets.ImageFolder(val_path,transform=transform['val_test'])
-```
-
-
-## Pre-trained Networks
-
-We provide pre-trained networks with torch.hub :
-
-```python
-import torch
-model = torch.hub.load('Harry24k/releasing-research-code', 'resnet18', pretrained=True, force_reload=True)
 ```
 
 ## Results
@@ -119,20 +114,3 @@ use  mean `[0.5, 0.5, 0.5]` and standard deviation `[0.5, 0.5, 0.5]` with PNASNe
 You can find the code in transforms.py.
 
 > 📋Include a table of results from your paper, and link back to the leaderboard for clarity and context. If your main result is a figure, include that figure and link to the command or notebook to reproduce it. 
-
-
-## References to other models
-
-Model definition scripts are based on https://github.com/pytorch/vision/ and https://github.com/Cadene/pretrained-models.pytorch.
-
-The Training from scratch implementation is based on https://github.com/facebookresearch/multigrain.
-
-Our FixResNet-50 CutMix is fine-tune from the weights of the GitHub page : https://github.com/clovaai/CutMix-PyTorch.
-The corresponding paper is 
-```
-@inproceedings{2019arXivCutMix,
-       author = {Sangdoo Yun and Dongyoon Han and Seong Joon Oh and Sanghyuk Chun and Junsuk Choe and Youngjoon Yoo,
-       title = "{CutMix: Regularization Strategy to Train Strong Classifiers with Localizable Features}",
-       journal = {arXiv e-prints},
-       year = "2019"}
-```
