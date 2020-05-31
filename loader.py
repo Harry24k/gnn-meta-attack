@@ -35,9 +35,9 @@ def load_npz(file_name, is_sparse=True):
     return adj, features, labels
 
 
-def get_adj(dataset, require_lcc=True):
+def get_adj(dataset, is_sparse, require_lcc=True):
     print('reading %s...' % dataset)
-    _A_obs, _X_obs, _z_obs = load_npz(r'data/%s.npz' % dataset)
+    _A_obs, _X_obs, _z_obs = load_npz(r'data/%s.npz' % dataset, is_sparse=is_sparse)
     _A_obs = _A_obs + _A_obs.T
     _A_obs = _A_obs.tolil()
     _A_obs[_A_obs > 1] = 1
@@ -89,21 +89,23 @@ def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     return torch.sparse.FloatTensor(indices, values, shape)
 
 
-def load_data(data_name, train=True, test_size=0.9, random_state=1, sparse=False):
+def load_data(data_name, train=True, test_size=0.9, random_state=1,
+              from_sparse=True, to_sparse=False):
 
     print('Loading {} dataset...'.format(data_name))
-    adj, features, labels = get_adj(data_name)
+    adj, features, labels = get_adj(data_name, from_sparse)
     features = sp.csr_matrix(features, dtype=np.float32)
 
     labels = torch.LongTensor(labels)
-    if sparse:
+    if to_sparse:
         adj = sparse_mx_to_torch_sparse_tensor(adj)
         features = sparse_mx_to_torch_sparse_tensor(features)
     else:
         features = torch.FloatTensor(np.array(features.todense()))
         adj = torch.FloatTensor(adj.todense())
 
-    train_idx, test_idx, _, _ = train_test_split(list(range(len(labels))), labels.numpy(), test_size=0.9, random_state=random_state)
+    train_idx, test_idx, _, _ = train_test_split(list(range(len(labels))), labels.numpy(), 
+                                                 test_size=test_size, random_state=random_state)
 
     if train :
         labels[test_idx] = -1
@@ -111,38 +113,3 @@ def load_data(data_name, train=True, test_size=0.9, random_state=1, sparse=False
         labels[train_idx] = -1
 
     return features, adj, labels
-
-
-# Below functions are intergrated to model.
-# def to_scipy(sparse_tensor):
-#     """Convert a scipy sparse matrix to a torch sparse tensor."""
-#     values = sparse_tensor._values()
-#     indices = sparse_tensor._indices()
-#     return sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()))
-
-
-# def normalize_adj(mx):
-#     """Row-normalize sparse matrix"""
-#     rowsum = np.array(mx.sum(1))
-#     r_inv = np.power(rowsum, -1/2).flatten()
-#     r_inv[np.isinf(r_inv)] = 0.
-#     r_mat_inv = sp.diags(r_inv)
-#     mx = r_mat_inv.dot(mx)
-#     mx = mx.dot(r_mat_inv)
-#     return mx
-
-
-# def normalize_adj_tensor(adj, sparse=False):
-#     if sparse:
-#         adj = to_scipy(adj)
-#         mx = normalize_adj(adj.tolil())
-#         return sparse_mx_to_torch_sparse_tensor(mx).cuda()
-#     else:
-#         mx = adj + torch.eye(adj.shape[0]).cuda()
-#         rowsum = mx.sum(1)
-#         r_inv = rowsum.pow(-1/2).flatten()
-#         r_inv[torch.isinf(r_inv)] = 0.
-#         r_mat_inv = torch.diag(r_inv)
-#         mx = r_mat_inv @ mx
-#         mx = mx @ r_mat_inv
-#     return mx

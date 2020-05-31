@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-def train(model, data, save_path, device, epochs=200, loss=None, optimizer=None):
+def train(model, data, device, save_path=None, epochs=200, loss=None, optimizer=None):
 
     try:
         features, edges, labels = data
@@ -25,7 +25,8 @@ def train(model, data, save_path, device, epochs=200, loss=None, optimizer=None)
     for i in range(epochs):
         pre = model(features, edges)
 
-        pre, Y = select_index(pre, labels)
+        idx = select_index(labels, -1, same=False)
+        pre, Y = pre[idx], labels[idx]
 
         # Calculate loss
         cost = loss(pre, Y)
@@ -35,15 +36,11 @@ def train(model, data, save_path, device, epochs=200, loss=None, optimizer=None)
         cost.backward()
         optimizer.step()
 
-#         _, pre = torch.max(pre.data, 1)
-#         total = 0. + pre.size(0)
-#         correct = 0. + (pre == Y).sum()
-#     if i % 20 == 0 :
-#             print(cost.item(), (correct/total).item()*100)
-
     print("Train Accuracy: %2.2f %%"%get_acc(model, data, device))
-    torch.save(model.state_dict(), save_path)
-    print("Model saved as", save_path)
+    
+    if save_path is not None :
+        torch.save(model.state_dict(), save_path)
+        print("Model saved as", save_path)
 
 
 # Test
@@ -66,8 +63,9 @@ def get_acc(model, data, device):
 
     pre = model(features, edges)
 
-    pre, Y = select_index(pre, labels)
-
+    idx = select_index(labels, -1, same=False)
+    pre, Y = pre[idx], labels[idx]
+    
     _, pre = torch.max(pre.data, 1)
     total = 0. + pre.size(0)
     correct = 0. + (pre == Y).sum()
@@ -75,8 +73,9 @@ def get_acc(model, data, device):
     return (correct/total).item()*100
 
 
-def select_index(pre, y) :
-    idx = (y != -1).nonzero().view(-1)
-    y = y[idx]
-    pre = pre[idx]
-    return pre, y
+def select_index(y, value, same=True) :
+    if same : 
+        idx = (y == value).nonzero().view(-1)
+    else :
+        idx = (y != value).nonzero().view(-1)
+    return idx

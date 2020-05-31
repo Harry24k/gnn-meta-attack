@@ -135,7 +135,6 @@ def compute_log_likelihood(n, alpha, sum_log_degrees, d_min):
 
     return ll
 
-
 def ravel_multiple_indices(ixs, shape, reverse=False):
     """
     "Flattens" multiple 2D input indices into indices on the flattened matrix, similar to np.ravel_multi_index.
@@ -146,3 +145,5 @@ def ravel_multiple_indices(ixs, shape, reverse=False):
         return ixs[:, 1] * shape[1] + ixs[:, 0]
 
     return ixs[:, 0] * shape[1] + ixs[:, 1]
+
+

@@ -59,7 +59,11 @@ class GCN(nn.Module):
 
         self.gc1 = GraphConvolution(nfeat, nhid)
         self.gc2 = GraphConvolution(nhid, nclass)
-
+        
+    def initialize(self):
+        self.gc1.reset_parameters()
+        self.gc2.reset_parameters()
+        
     def forward(self, x, adj):
         x = self.gc1(x, adj)
         x = F.relu(x)
@@ -67,7 +71,3 @@ class GCN(nn.Module):
         x = self.gc2(x, adj)
         out = F.log_softmax(x, dim=1)
         return out
-
-    def initialize(self):
-        self.gc1.reset_parameters()
-        self.gc2.reset_parameters()

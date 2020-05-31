@@ -6,9 +6,9 @@ This repository is a pytorch implementation of [Adversarial Attacks on Graph Neu
 
 It is modified from following githubs :
 
-> https://github.com/danielzuegner/gnn-meta-attack (Official, Tensorflow)
+> https://github.com/ChandlerBang/pytorch-gnn-meta-attack (Main Reference, Pytorch)
 
-> https://github.com/ChandlerBang/pytorch-gnn-meta-attack (Pytorch)
+> https://github.com/danielzuegner/gnn-meta-attack (Official, Tensorflow)
 
 > https://github.com/Kaushalya/gnn-meta-attack-pytorch (Pytorch)
 
@@ -17,6 +17,7 @@ It is modified from following githubs :
 * python 3.6
 * torch 1.2
 * torchvision 0.5
+* [higher](https://github.com/facebookresearch/higher)
 * numpy
 * scipy
 * matpotlib
@@ -31,86 +32,69 @@ See help (`-h` flag) for detailed parameter list of each script before executing
 To train the model(s) in the paper, run this command:
 
 ```bash
-# ResNet50
-python main_resnet50_scratch.py --batch 64 --num-tasks 8 --learning-rate 2e-2
+# cora_ml
+python main.py --train True --hidden 16 --data-name cora_ml --save-path sample.pth
 
 ```
-
-> 📋Describe how to train the models, with example commands on how to train the models in your paper, including the full training procedure and appropriate hyperparameters.
 
 ### Evaluation
 
-See help (`-h` flag) for detailed parameter list of each script before executing the code.
-
-`main_evaluate_imnet.py` evaluates the network on standard benchmarks.
-
-`main_evaluate_softmax.py` evaluates the network on ImageNet-val with already extracted softmax output. (Much faster to execute)
+To evaluate the model(s) saved locally, run this command:
 
 ```bash
-# FixResNeXt-101 32x48d
-python main_evaluate_imnet.py --input-size 320 --architecture 'IGAM_Resnext101_32x48d' --weight-path 'ResNext101_32x48d.pth'
+# cora_ml
+python main.py --train False --hidden 6 --data-name cora_ml --save-path sample.pth
+
 ```
 
-The following code give results that corresponds to table 2 in the paper :
+### Generate Poisoned Data with Meta Attack
+
+Here is how to generate poisoned data :
+
+```bash
+# cora_ml
+python poison.py --hidden 6 --lambda_ 0.5 --train-iters 15 --perturb-rate 0.05 --save-path sample.pth --data-name cora_ml
+
 ```
-# FixResNet-50
-python main_evaluate_imnet.py --input-size 384 --architecture 'ResNet50' --weight-path 'ResNet50.pth'
-```
 
-> 📋Describe how to evaluate the trained models on benchmarks reported in the paper, give commands that produce the results (section below).
+(+) Approximated Meta Attack is not implemented.
 
-### Using transforms_v2 for fine-tuning
-To reproduce our best results we must use the data-augmentation of transforms_v2 and use almost the same parameters as for the classic data augmentation, the only changes are the learning rate which must be 1e-4 and the number of epochs which must be 11. For FixResNet-50 fine-tune you have to use 31 epochs and a learning rate of 1e-3 and for FixResNet-50 CutMix you have to use 11 epochs and a learning rate of 1e-3.
-Here is how to use transforms_v2 :
-
-```python
-from torchvision import datasets
-from .transforms_v2 import get_transforms
-
-transform = get_transforms(input_size=Train_size,test_size=Test_size, kind='full', crop=True, need=('train', 'val'), backbone=None)
-train_set = datasets.ImageFolder(train_path,transform=transform['val_train'])
-test_set = datasets.ImageFolder(val_path,transform=transform['val_test'])
-```
 
 ## Results
 
-We report in the table validation resolution, Top-1 and Top-5 accuracy on ImageNet validation set:
+The accuracy on each dataset :
 
-Our model achieves the following performance on :
+(+) Unless it's mentioned, all values are set to default.
+(+) For each method, lambdas are 0(Self), 0.5(Both) and 1(Train).
 
-### ImageNet
+### cora_ml
 
-|  Models  | Resolution | #Parameters | Top-1 / Top-5 |                                        Weights                                         |
-|:---:|:-:|:------------:|:------:|:---------------------------------------------------------------------------------------:|
-|  ResNet-50 Baseline| 224 |     25.6M     |  77.0 /  93.4 | [FixResNet50_no_adaptation.pth](https://dl.fbaipublicfiles.com/FixRes_data/FixRes_Pretrained_Models/ResNet_no_adaptation.pth)  |
-|  FixResNet-50 | 384 |    25.6M     |  79.0 / 94.6 |  [FixResNet50.pth](https://dl.fbaipublicfiles.com/FixRes_data/FixRes_Pretrained_Models/ResNetFinetune.pth)  |
-|  FixResNet-50 (*)| 384 |    25.6M     |  79.1 / 94.6 |  [FixResNet50_v2.pth](https://dl.fbaipublicfiles.com/FixRes_data/FixRes_Pretrained_Models/ResNet50_v2.pth)  |
-| FixResNet-50 CutMix | 320 |     25.6M     |  79.7 /  94.9 | [FixResNet50CutMix.pth](https://dl.fbaipublicfiles.com/FixRes_data/FixRes_Pretrained_Models/ResNetCutMix.pth)  |
+|  Description | Perturb Rate | Accuracy(Dropped) | Reported | Data Name |
+|:---:|:------------:|:------:|:------:|:------:| 
+| Clean |     0.00     |  85.80%(-) |  83.40% | cora_ml.npz |
+| Self  |     0.05     |  80.43%(5.37%p) |  75.50% | cora_ml_self_5.npz |
+| Both  |     0.05     |  81.42%(4.38%p) |  85.80% | cora_ml_both_5.npz |
+| Train |     0.05     |  82.52%(3.28%p) |  78.00% | cora_ml_train_5.npz |
+| Self  |     0.20     |  58.01%(27.79%p) |  - | cora_ml_self_20.npz |
+| Both  |     0.20     |  67.73%(18.07%p) |  - | cora_ml_both_20.npz |
+| Train |     0.20     |  80.03%(5.77%p) |  - | cora_ml_train_20.npz |
 
-(+)  We use Horizontal flip, shifted Center Crop and color jittering for fine-tuning (described in [transforms_v2.py](transforms_v2.py))
+(+) Due to GPU Limitation, I used train-iters=15 when generating poisoned data. Thus, the accuracies of meta-attack are higher than reported ones.
 
-(+) We report different results with our FixEfficientNet (see [FixEfficientNet](README_FixEfficientNet.md) for more details)
+## Visualization
 
-To load a network, use the following PyTorch code: 
+Here is a visualization of changes of edges with [Lightning](http://lightning-viz.org/lightning-python/index.html).
 
-```python
-import torch
-from .resnext_wsl import resnext101_32x48d_wsl
+Please see [Visulaize.ipynb](https://github.com/Harry24k/gnn-meta-attack/Visualize.ipynb) for reproducing these images.
 
-model=resnext101_32x48d_wsl(progress=True) # example with the ResNeXt-101 32x48d 
+cora_ml | cora_ml_both_5
+:---: | :---:
+<img src="https://github.com/Harry24k/gnn-meta-attack/images/cora_ml.png" width="300" height="300"> | <img src="https://github.com/Harry24k/gnn-meta-attack/images/cora_ml_both_5.png" width="300" height="300">
 
-pretrained_dict=torch.load('ResNeXt101_32x48d.pth',map_location='cpu')['model']
+(+) Statistics
 
-model_dict = model.state_dict()
-for k in model_dict.keys():
-    if(('module.'+k) in pretrained_dict.keys()):
-        model_dict[k]=pretrained_dict.get(('module.'+k))
-model.load_state_dict(model_dict)
-```
-The network takes images in any resolution. 
-A normalization pre-processing step is used, with mean `[0.485, 0.456, 0.406]`. 
-and standard deviation `[0.229, 0.224, 0.225]` for ResNet-50 and ResNeXt-101 32x48d,
-use  mean `[0.5, 0.5, 0.5]` and standard deviation `[0.5, 0.5, 0.5]` with PNASNet.
-You can find the code in transforms.py.
-
-> 📋Include a table of results from your paper, and link back to the leaderboard for clarity and context. If your main result is a figure, include that figure and link to the command or notebook to reproduce it. 
+* Deleted Edges: 0.0
+* Created Edges: 212.0
+* Number of Nodes
+    * Effected Train Nodes: 34
+    * Effected Test Nodes: 135
