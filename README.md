@@ -89,7 +89,7 @@ Please see [Visulaize.ipynb](https://github.com/Harry24k/gnn-meta-attack/Visuali
 
 cora_ml | cora_ml_both_5
 :---: | :---:
-<img src="https://github.com/Harry24k/gnn-meta-attack/images/cora_ml.png" width="300" height="300"> | <img src="https://github.com/Harry24k/gnn-meta-attack/images/cora_ml_both_5.png" width="300" height="300">
+<img src="https://github.com/Harry24k/gnn-meta-attack/blob/master/images/cora_ml.png" width="300" height="300"> | <img src="https://github.com/Harry24k/gnn-meta-attack/blob/master/images/cora_ml_both_5.png" width="300" height="300">
 
 (+) Statistics
 
