@@ -68,11 +68,11 @@ The accuracy on each dataset :
 ### cora_ml
 
 |  Description | Perturb Rate | Accuracy(Dropped) | Reported | Data Name |
-|:---:|:------------:|------:|------:|:------:| 
-| Clean |     0.00     |  85.80%(-) |  83.40% | cora_ml.npz |
-| Self  |     0.05     |  80.43%(5.37%p) |  75.50% | cora_ml_self_5.npz |
+|:---:|:------------:|:------|:------|:------:| 
+| Clean |     0.00     |  85.80% |  83.40% | cora_ml.npz |
+| Self  |     0.05     |  80.43%(5.37%p) |  75.50%(7.90%p) | cora_ml_self_5.npz |
 | Both  |     0.05     |  81.42%(4.38%p) |  - | cora_ml_both_5.npz |
-| Train |     0.05     |  82.52%(3.28%p) |  78.00% | cora_ml_train_5.npz |
+| Train |     0.05     |  82.52%(3.28%p) |  78.00%(5.40%p) | cora_ml_train_5.npz |
 | Self  |     0.20     |  58.01%(27.79%p) |  - | cora_ml_self_20.npz |
 | Both  |     0.20     |  67.73%(18.07%p) |  - | cora_ml_both_20.npz |
 | Train |     0.20     |  80.03%(5.77%p) |  - | cora_ml_train_20.npz |
@@ -83,11 +83,11 @@ The accuracy on each dataset :
 ### citeseer
 
 |  Description | Perturb Rate | Accuracy(Dropped) | Reported | Data Name |
-|:---:|:------------:|------:|------:|:------:| 
-| Clean |     0.00     |  70.41%(-) |  72.50% | citeseer.npz |
-| Self  |     0.05     |  64.35%(6.06%p) |  65.40% | citeseer_self_5.npz |
+|:---:|:------------:|:------|:------|:------:| 
+| Clean |     0.00     |  70.41% |  72.50% | citeseer.npz |
+| Self  |     0.05     |  64.35%(6.06%p) |  65.40%(7.10%p) | citeseer_self_5.npz |
 | Both  |     0.05     |  61.08%(9.33%p) |  - | citeseer_both_5.npz |
-| Train |     0.05     |  68.98%(1.43%p) |  69.70% | citeseer_train_5.npz |
+| Train |     0.05     |  68.98%(1.43%p) |  69.70%(2.80%p) | citeseer_train_5.npz |
 
 (+) Due to GPU Limitation, I used train-iters=15 when generating poisoned data. Thus, the accuracies of meta-attack likely to be higher than reported ones.
 
@@ -95,11 +95,11 @@ The accuracy on each dataset :
 ### polblogs
 
 |  Description | Perturb Rate | Accuracy(Dropped) | Reported | Data Name |
-|:---:|:------------:|------:|------:|:------:| 
-| Clean |     0.00     |  93.18%(-) |  93.60% | polblogs.npz |
-| Self  |     0.05     |  74.36%(18.82%p) |  77.50% | polblogs_self_5.npz |
+|:---:|:------------:|:------|:------|:------:| 
+| Clean |     0.00     |  93.18% |  93.60% | polblogs.npz |
+| Self  |     0.05     |  74.36%(18.82%p) |  77.50%(16.10%p) | polblogs_self_5.npz |
 | Both  |     0.05     |  78.27%(14.91%p) |  - | polblogs_both_5.npz |
-| Train |     0.05     |  86.09%(7.09%p) |  83.70% | polblogs_train_5.npz |
+| Train |     0.05     |  86.09%(7.09%p) |  83.70%(9.90%p) | polblogs_train_5.npz |
 
 (+) Due to GPU Limitation, I used train-iters=15 when generating poisoned data. Thus, the accuracies of meta-attack alikely to be higher than reported ones.
 
