@@ -107,7 +107,7 @@ The accuracy on each dataset :
 
 Here is a visualization of changes of edges with [Lightning](http://lightning-viz.org/lightning-python/index.html).
 
-Please see [Visulaize.ipynb](https://github.com/Harry24k/gnn-meta-attack/Visualize.ipynb) for reproducing these images.
+Please see [Visulaize.ipynb](https://github.com/Harry24k/gnn-meta-attack/Visualize.ipynb) to reproduce these images.
 
 cora_ml | cora_ml_both_5
 :---: | :---:
